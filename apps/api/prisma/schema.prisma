@@ -107,7 +107,6 @@ model Product {
   tax            Tax?             @relation("ProductTax", fields: [taxId], references: [id])
   variants       ProductVariant[] @relation("ProductVariants")
   purchases      Purchase[]       @relation("ProductPurchases")
-  sales          Sales[]          @relation("ProductSales")
   groupProducts  GroupProduct[]   @relation("GroupProductComponents")
   groupedBy      GroupProduct[]   @relation("GroupedProduct")
   coupons        Coupon[]         @relation("ProductCoupons")
@@ -176,33 +175,16 @@ model Supplier {
   updatedAt DateTime   @updatedAt
 }
 
-model Sales {
-  id          Int    @id @default(autoincrement())
-  quantity    Int
-  unitPrice   Float
-  totalPrice  Float?
-  productId   Int
-  taxId       Int?
-  couponId    Int?
-  warehouseId Int?
-  customerId  Int?
-
-  product   Product    @relation("ProductSales", fields: [productId], references: [id])
-  tax       Tax?       @relation("SalesTax", fields: [taxId], references: [id])
-  coupon    Coupon?    @relation("SalesCoupon", fields: [couponId], references: [id])
-  warehouse Warehouse? @relation("SalesWarehouse", fields: [warehouseId], references: [id])
-  customer  Customer?  @relation("CustomerSales", fields: [customerId], references: [id])
-}
-
 model Tax {
-  id         Int        @id @default(autoincrement())
+  id         Int         @id @default(autoincrement())
   taxName    String
-  taxCode    String     @unique
+  taxCode    String      @unique
   taxRate    Float
   isActive   Boolean
-  products   Product[]  @relation("ProductTax")
-  sales      Sales[]    @relation("SalesTax")
-  categories Category[] @relation("CategoryTaxes")
+  products   Product[]   @relation("ProductTax")
+  categories Category[]  @relation("CategoryTaxes")
+  orderItems OrderItem[] @relation("OrderItemTax")
+  orders     Order[]     @relation("OrderTax")
 }
 
 model Coupon {
@@ -216,8 +198,9 @@ model Coupon {
   usedCount     Int           @default(0)
   isActive      Boolean
   products      Product[]     @relation("ProductCoupons")
-  sales         Sales[]       @relation("SalesCoupon")
   categories    Category[]    @relation("CategoryCoupons")
+  orderItems    OrderItem[]   @relation("OrderItemCoupon")
+  orders        Order[]       @relation("OrderCoupon")
 }
 
 model Branch {
@@ -239,10 +222,14 @@ model Warehouse {
   branch             Branch          @relation("BranchWarehouses", fields: [branchId], references: [id])
   bins               Bin[]           @relation("WarehouseBins")
   purchases          Purchase[]      @relation("PurchaseWarehouse")
-  sales              Sales[]         @relation("SalesWarehouse")
   binInventories     BinInventory[]  @relation("WarehouseBinInventories")
   stockTransfersFrom StockTransfer[] @relation("StockTransferFromWarehouse")
   stockTransfersTo   StockTransfer[] @relation("StockTransferToWarehouse")
+
+  orderItems OrderItem[] @relation("OrderItemWarehouse")
+
+  @@index([warehouseCode])
+  @@index([branchId])
 }
 
 model Bin {
@@ -279,7 +266,6 @@ model Customer {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   orders        Order[]  @relation("CustomerOrders")
-  sales         Sales[]  @relation("CustomerSales")
 }
 
 model Order {
@@ -296,6 +282,8 @@ model Order {
 
   customer Customer? @relation("CustomerOrders", fields: [customerId], references: [id])
   branch   Branch?   @relation("BranchOrders", fields: [branchId], references: [id])
+  tax      Tax?      @relation("OrderTax", fields: [taxId], references: [id])
+  coupon   Coupon?   @relation("OrderCoupon", fields: [couponId], references: [id])
 
   orderItems OrderItem[] @relation("OrderItems")
   payments   Payment[]   @relation("OrderPayments")
@@ -307,12 +295,25 @@ model OrderItem {
   orderId          Int
   productId        Int
   productVariantId Int?
+  warehouseId      Int?
   quantity         Int
   unitPrice        Float
+  taxId            Int?
+  couponId         Int?
 
   order          Order           @relation("OrderItems", fields: [orderId], references: [id])
   product        Product         @relation("OrderItemProduct", fields: [productId], references: [id])
   productVariant ProductVariant? @relation("OrderItemVariant", fields: [productVariantId], references: [id])
+  warehouse      Warehouse?      @relation("OrderItemWarehouse", fields: [warehouseId], references: [id])
+  tax            Tax?            @relation("OrderItemTax", fields: [taxId], references: [id])
+  coupon         Coupon?         @relation("OrderItemCoupon", fields: [couponId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+  @@index([productVariantId])
+  @@index([warehouseId])
+  @@index([taxId])
+  @@index([couponId])
 }
 
 model Payment {
@@ -355,15 +356,27 @@ model Return {
   order       Order    @relation(fields: [orderId], references: [id])
 }
 
-model User {
+model ActivityLog {
   id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  role      UserRole
-  isActive  Boolean  @default(true)
+  userId    Int?
+  action    String
+  target    String?
+  meta      Json?
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id          Int           @id @default(autoincrement())
+  name        String?
+  email       String?       @unique
+  phone       String?       @unique
+  password    String
+  role        UserRole
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  ActivityLog ActivityLog[]
 }
 
 enum UserRole {
