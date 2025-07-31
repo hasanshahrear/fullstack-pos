@@ -26,7 +26,7 @@ model Category {
 
   products       Product[]  @relation("ProductCategory")
   subCategories  Category[] @relation("ParentCategory")
-  parentCategory Category?  @relation("ParentCategory", fields: [id], references: [id])
+  parentCategory Category?  @relation("ParentCategory", fields: [parentCategoryId], references: [id])
 
   @@index([categoryCode])
   @@index([parentCategoryId])
@@ -52,37 +52,23 @@ model Unit {
 }
 
 model ProductVariantOption {
-  id                 Int                              @id @default(autoincrement())
+  id                 Int                         @id @default(autoincrement())
   optionName         String
   optionStatus       Boolean
-  optionValues       ProductVariantOptionValue[]      @relation("VariantOptionValues")
-  variantAssignments ProductVariantOptionAssignment[] @relation("VariantOptionAssignments")
+  optionValues       ProductVariantOptionValue[] @relation("VariantOptionValues")
+  variantAssignments ProductVariantAssignment[]  @relation("VariantOptionAssignments")
 }
 
 model ProductVariantOptionValue {
-  id                 Int                              @id @default(autoincrement())
+  id                 Int                        @id @default(autoincrement())
   optionValueName    String
   optionValueStatus  Boolean
   variantOptionId    Int
-  variantOption      ProductVariantOption             @relation("VariantOptionValues", fields: [variantOptionId], references: [id])
-  variantAssignments ProductVariantOptionAssignment[] @relation("VariantOptionValueAssignments")
+  variantOption      ProductVariantOption       @relation("VariantOptionValues", fields: [variantOptionId], references: [id])
+  variantAssignments ProductVariantAssignment[] @relation("VariantOptionValueAssignments")
 }
 
-model ProductVariant {
-  id                     Int                              @id @default(autoincrement())
-  variantName            String
-  variantQuantity        Int
-  variantPrice           Float
-  variantDiscountType    EDiscountType?
-  variantDiscountedValue Float?
-  productId              Int
-  product                Product                          @relation("ProductVariants", fields: [productId], references: [id])
-  variantAssignments     ProductVariantOptionAssignment[] @relation("VariantAssignments")
-  groupProducts          GroupProduct[]                   @relation("GroupProductVariant")
-  binInventories         BinInventory[]                   @relation("BinInventoryVariant")
-}
-
-model ProductVariantOptionAssignment {
+model ProductVariantAssignment {
   id                   Int                       @id @default(autoincrement())
   productVariantId     Int
   variantOptionId      Int
@@ -93,9 +79,9 @@ model ProductVariantOptionAssignment {
 }
 
 model Product {
-  id                 Int              @id @default(autoincrement())
+  id                 Int               @id @default(autoincrement())
   productName        String
-  productSKU         String           @unique
+  productSKU         String            @unique
   minQuantity        Int
   stockAlert         Int
   quantity           Int
@@ -112,23 +98,37 @@ model Product {
   brandId            Int?
   salesUnitId        Int
   taxId              Int?
-  category           Category         @relation("ProductCategory", fields: [categoryId], references: [id])
-  brand              Brand?           @relation("ProductBrand", fields: [brandId], references: [id])
-  salesUnit          Unit             @relation("ProductUnit", fields: [salesUnitId], references: [id])
-  tax                Tax?             @relation("ProductTax", fields: [taxId], references: [id])
-  variants           ProductVariant[] @relation("ProductVariants")
-  purchases          Purchase[]       @relation("ProductPurchases")
-  sales              Sales[]          @relation("ProductSales")
-  groupProducts      GroupProduct[]   @relation("GroupProductComponents")
-  groupedBy          GroupProduct[]   @relation("GroupedProduct")
-  coupons            Coupon[]         @relation("ProductCoupons")
-  binInventories     BinInventory[]   @relation("BinInventoryProduct")
+  category           Category          @relation("ProductCategory", fields: [categoryId], references: [id])
+  brand              Brand?            @relation("ProductBrand", fields: [brandId], references: [id])
+  salesUnit          Unit              @relation("ProductUnit", fields: [salesUnitId], references: [id])
+  tax                Tax?              @relation("ProductTax", fields: [taxId], references: [id])
+  variants           ProductVariant[]  @relation("ProductVariants")
+  purchases          Purchase[]        @relation("ProductPurchases")
+  sales              Sales[]           @relation("ProductSales")
+  groupProducts      GroupProduct[]    @relation("GroupProductComponents")
+  groupedBy          GroupProduct[]    @relation("GroupedProduct")
+  coupons            Coupon[]          @relation("ProductCoupons")
+  binInventories     BinInventoryMap[] @relation("BinInventoryProduct")
 
   @@index([productSKU])
   @@index([categoryId])
   @@index([brandId])
   @@index([salesUnitId])
   @@index([taxId])
+}
+
+model ProductVariant {
+  id                     Int                        @id @default(autoincrement())
+  variantName            String
+  variantQuantity        Int
+  variantPrice           Float
+  variantDiscountType    EDiscountType?
+  variantDiscountedValue Float?
+  productId              Int
+  product                Product                    @relation("ProductVariants", fields: [productId], references: [id])
+  variantAssignments     ProductVariantAssignment[] @relation("VariantAssignments")
+  groupProducts          GroupProduct[]             @relation("GroupProductVariant")
+  binInventories         BinInventoryMap[]          @relation("BinInventoryVariant")
 }
 
 model GroupProduct {
@@ -142,6 +142,88 @@ model GroupProduct {
   productVariant   ProductVariant? @relation("GroupProductVariant", fields: [productVariantId], references: [id])
 
   @@index([groupProductId])
+}
+
+model Tax {
+  id       Int       @id @default(autoincrement())
+  taxName  String
+  taxCode  String    @unique
+  taxRate  Float
+  isActive Boolean
+  products Product[] @relation("ProductTax")
+  sales    Sales[]   @relation("SalesTax")
+}
+
+model Coupon {
+  id            Int           @id @default(autoincrement())
+  couponCode    String        @unique
+  discountType  EDiscountType
+  discountValue Float
+  validFrom     DateTime?
+  validUntil    DateTime?
+  usageLimit    Int?
+  usedCount     Int           @default(0)
+  isActive      Boolean
+  products      Product[]     @relation("ProductCoupons")
+  sales         Sales[]       @relation("SalesCoupon")
+}
+
+model Branch {
+  id         Int         @id @default(autoincrement())
+  branchName String
+  branchCode String      @unique
+  address    String?
+  isActive   Boolean
+  warehouses Warehouse[] @relation("BranchWarehouses")
+
+  @@index([branchCode])
+}
+
+model Warehouse {
+  id             Int               @id @default(autoincrement())
+  warehouseName  String
+  warehouseCode  String            @unique
+  branchId       Int
+  isActive       Boolean
+  branch         Branch            @relation("BranchWarehouses", fields: [branchId], references: [id])
+  bins           Bin[]             @relation("WarehouseBins")
+  purchases      Purchase[]        @relation("PurchaseWarehouse")
+  sales          Sales[]           @relation("SalesWarehouse")
+  binInventories BinInventoryMap[] @relation("WarehouseBinInventories")
+
+  @@index([warehouseCode])
+  @@index([branchId])
+}
+
+model Bin {
+  id             Int               @id @default(autoincrement())
+  binCode        String            @unique
+  warehouseId    Int
+  description    String?
+  isActive       Boolean
+  warehouse      Warehouse         @relation("WarehouseBins", fields: [warehouseId], references: [id])
+  binInventories BinInventoryMap[] @relation("BinInventories")
+
+  @@index([binCode])
+  @@index([warehouseId])
+}
+
+model BinInventoryMap {
+  id               Int             @id @default(autoincrement())
+  warehouseId      Int
+  binId            Int
+  productId        Int
+  productVariantId Int?
+  quantity         Int
+  warehouse        Warehouse       @relation("WarehouseBinInventories", fields: [warehouseId], references: [id])
+  bin              Bin             @relation("BinInventories", fields: [binId], references: [id])
+  product          Product         @relation("BinInventoryProduct", fields: [productId], references: [id])
+  productVariant   ProductVariant? @relation("BinInventoryVariant", fields: [productVariantId], references: [id])
+
+  @@index([warehouseId])
+  @@index([binId])
+  @@index([productId])
+  @@index([productVariantId])
 }
 
 model Purchase {
@@ -169,94 +251,11 @@ model Sales {
   tax         Tax?       @relation("SalesTax", fields: [taxId], references: [id])
   coupon      Coupon?    @relation("SalesCoupon", fields: [couponId], references: [id])
   warehouse   Warehouse? @relation("SalesWarehouse", fields: [warehouseId], references: [id])
+  customerId  Int?
 
   @@index([taxId])
   @@index([couponId])
   @@index([warehouseId])
-}
-
-model Tax {
-  id       Int       @id @default(autoincrement())
-  taxName  String
-  taxCode  String    @unique
-  taxRate  Float
-  isActive Boolean
-  products Product[] @relation("ProductTax")
-  sales    Sales[]   @relation("SalesTax")
-  // categories Category[] @relation("CategoryTaxes")
-}
-
-model Coupon {
-  id            Int           @id @default(autoincrement())
-  couponCode    String        @unique
-  discountType  EDiscountType
-  discountValue Float
-  validFrom     DateTime?
-  validUntil    DateTime?
-  usageLimit    Int?
-  usedCount     Int           @default(0)
-  isActive      Boolean
-  products      Product[]     @relation("ProductCoupons")
-  sales         Sales[]       @relation("SalesCoupon")
-  // categories    Category[]    @relation("CategoryCoupons")
-}
-
-model Branch {
-  id         Int         @id @default(autoincrement())
-  branchName String
-  branchCode String      @unique
-  address    String?
-  isActive   Boolean
-  warehouses Warehouse[] @relation("BranchWarehouses")
-
-  @@index([branchCode])
-}
-
-model Warehouse {
-  id             Int            @id @default(autoincrement())
-  warehouseName  String
-  warehouseCode  String         @unique
-  branchId       Int
-  isActive       Boolean
-  branch         Branch         @relation("BranchWarehouses", fields: [branchId], references: [id])
-  bins           Bin[]          @relation("WarehouseBins")
-  purchases      Purchase[]     @relation("PurchaseWarehouse")
-  sales          Sales[]        @relation("SalesWarehouse")
-  binInventories BinInventory[] @relation("WarehouseBinInventories")
-
-  @@index([warehouseCode])
-  @@index([branchId])
-}
-
-model Bin {
-  id             Int            @id @default(autoincrement())
-  binCode        String         @unique
-  warehouseId    Int
-  description    String?
-  isActive       Boolean
-  warehouse      Warehouse      @relation("WarehouseBins", fields: [warehouseId], references: [id])
-  binInventories BinInventory[] @relation("BinInventories")
-
-  @@index([binCode])
-  @@index([warehouseId])
-}
-
-model BinInventory {
-  id               Int             @id @default(autoincrement())
-  warehouseId      Int
-  binId            Int
-  productId        Int
-  productVariantId Int?
-  quantity         Int
-  warehouse        Warehouse       @relation("WarehouseBinInventories", fields: [warehouseId], references: [id])
-  bin              Bin             @relation("BinInventories", fields: [binId], references: [id])
-  product          Product         @relation("BinInventoryProduct", fields: [productId], references: [id])
-  productVariant   ProductVariant? @relation("BinInventoryVariant", fields: [productVariantId], references: [id])
-
-  @@index([warehouseId])
-  @@index([binId])
-  @@index([productId])
-  @@index([productVariantId])
 }
 
 enum EDiscountType {
@@ -268,4 +267,24 @@ enum EProductType {
   single
   group
   variation
+}
+
+enum OrderStatus {
+  pending
+  completed
+  cancelled
+  returned
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+  refunded
+}
+
+enum TransferStatus {
+  pending
+  completed
+  cancelled
 }
