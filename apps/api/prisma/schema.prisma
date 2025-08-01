@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -269,16 +268,16 @@ model Customer {
 }
 
 model Order {
-  id          Int         @id @default(autoincrement())
-  orderNumber String      @unique
+  id          Int          @id @default(autoincrement())
+  orderNumber String       @unique
   customerId  Int?
   branchId    Int?
   totalAmount Float
   taxId       Int?
   couponId    Int?
-  status      OrderStatus
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  status      EOrderStatus
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   customer Customer? @relation("CustomerOrders", fields: [customerId], references: [id])
   branch   Branch?   @relation("BranchOrders", fields: [branchId], references: [id])
@@ -317,28 +316,28 @@ model OrderItem {
 }
 
 model Payment {
-  id            Int           @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   orderId       Int
   amount        Float
   paymentMethod String
-  paymentStatus PaymentStatus
-  transactionId String?       @unique
-  createdAt     DateTime      @default(now())
+  paymentStatus EPaymentStatus
+  transactionId String?        @unique
+  createdAt     DateTime       @default(now())
 
   order Order @relation("OrderPayments", fields: [orderId], references: [id])
 }
 
 model StockTransfer {
-  id               Int            @id @default(autoincrement())
-  transferNumber   String         @unique
+  id               Int             @id @default(autoincrement())
+  transferNumber   String          @unique
   fromWarehouseId  Int
   toWarehouseId    Int
   productId        Int
   productVariantId Int?
   quantity         Int
-  status           TransferStatus
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  status           ETransferStatus
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
   fromWarehouse  Warehouse       @relation("StockTransferFromWarehouse", fields: [fromWarehouseId], references: [id])
   toWarehouse    Warehouse       @relation("StockTransferToWarehouse", fields: [toWarehouseId], references: [id])
@@ -372,14 +371,14 @@ model User {
   email       String?       @unique
   phone       String?       @unique
   password    String
-  role        UserRole
+  role        EUserRole
   isActive    Boolean       @default(true)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   ActivityLog ActivityLog[]
 }
 
-enum UserRole {
+enum EUserRole {
   admin
   manager
   cashier
@@ -397,21 +396,21 @@ enum EProductType {
   variation
 }
 
-enum OrderStatus {
+enum EOrderStatus {
   pending
   completed
   cancelled
   returned
 }
 
-enum PaymentStatus {
+enum EPaymentStatus {
   pending
   completed
   failed
   refunded
 }
 
-enum TransferStatus {
+enum ETransferStatus {
   pending
   completed
   cancelled
