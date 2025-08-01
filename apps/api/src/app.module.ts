@@ -9,6 +9,10 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { BrandsModule } from './modules/brands/brands.module';
 import { UnitsModule } from './modules/units/units.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { StockTransfersModule } from './modules/stock-transfers/stock-transfers.module';
+import { ReturnsModule } from './modules/returns/returns.module';
+import { ActivityLogsModule } from './modules/activity-logs/activity-logs.module';
 
 @Module({
   imports: [
@@ -20,6 +24,10 @@ import { SuppliersModule } from './modules/suppliers/suppliers.module';
     BrandsModule,
     UnitsModule,
     SuppliersModule,
+    PaymentsModule,
+    StockTransfersModule,
+    ReturnsModule,
+    ActivityLogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
