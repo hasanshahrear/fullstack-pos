@@ -15,7 +15,7 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('brands')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 export class BrandsController {
   constructor(private readonly brandsService: BrandsService) {}
 

@@ -22,6 +22,7 @@
     "packages/*"
   ],
   "dependencies": {
-    "@nestjs/swagger": "^11.2.0"
+    "@nestjs/swagger": "^11.2.0",
+    "@prisma/client": "^6.13.0"
   }
 }

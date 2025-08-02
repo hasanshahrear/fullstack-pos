@@ -1,32 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateActivityLogDto } from './dto/create-activity-log.dto';
-import type { ActivityLog, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ActivityLogsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  private readonly include = {
-    user: true,
-  } as const;
+  private readonly include = { user: true } as const;
 
-  create(createActivityLogDto: CreateActivityLogDto): Promise<ActivityLog> {
-    return this.prisma.activityLog.create({
-      data: createActivityLogDto,
+  async create(createActivityLogDto: CreateActivityLogDto): Promise<any> {
+    const result = await this.prisma.activityLog.create({
+      data: createActivityLogDto as Prisma.ActivityLogCreateInput,
       include: this.include,
     });
+    return result;
   }
 
-  findAll(params: {
+  async findAll(params: {
     skip?: number;
     take?: number;
     cursor?: Prisma.ActivityLogWhereUniqueInput;
     where?: Prisma.ActivityLogWhereInput;
     orderBy?: Prisma.ActivityLogOrderByWithRelationInput;
-  }): Promise<ActivityLog[]> {
+  }): Promise<any[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.activityLog.findMany({
+    const results = await this.prisma.activityLog.findMany({
       skip,
       take,
       cursor,
@@ -34,59 +33,64 @@ export class ActivityLogsService {
       orderBy,
       include: this.include,
     });
+    return results;
   }
 
-  findOne(
-    where: Prisma.ActivityLogWhereUniqueInput,
-  ): Promise<ActivityLog | null> {
-    return this.prisma.activityLog.findUnique({
+  async findOne(where: Prisma.ActivityLogWhereUniqueInput): Promise<any> {
+    const result = await this.prisma.activityLog.findUnique({
       where,
       include: this.include,
     });
+    return result;
   }
 
-  update(params: {
+  async update(params: {
     where: Prisma.ActivityLogWhereUniqueInput;
     data: Prisma.ActivityLogUpdateInput;
-  }): Promise<ActivityLog> {
+  }): Promise<any> {
     const { where, data } = params;
-    return this.prisma.activityLog.update({
+    const result = await this.prisma.activityLog.update({
       data,
       where,
       include: this.include,
     });
+    return result;
   }
 
-  remove(where: Prisma.ActivityLogWhereUniqueInput): Promise<ActivityLog> {
-    return this.prisma.activityLog.delete({
+  async remove(where: Prisma.ActivityLogWhereUniqueInput): Promise<any> {
+    const result = await this.prisma.activityLog.delete({
       where,
       include: this.include,
     });
+    return result;
   }
 
-  findByUser(userId: number): Promise<ActivityLog[]> {
-    return this.prisma.activityLog.findMany({
+  async findByUser(userId: number): Promise<any[]> {
+    const results = await this.prisma.activityLog.findMany({
       where: { userId },
       include: this.include,
     });
+    return results;
   }
 
-  findByAction(action: string): Promise<ActivityLog[]> {
-    return this.prisma.activityLog.findMany({
+  async findByAction(action: string): Promise<any[]> {
+    const results = await this.prisma.activityLog.findMany({
       where: { action },
       include: this.include,
     });
+    return results;
   }
 
-  findByTarget(target: string): Promise<ActivityLog[]> {
-    return this.prisma.activityLog.findMany({
+  async findByTarget(target: string): Promise<any[]> {
+    const results = await this.prisma.activityLog.findMany({
       where: { target },
       include: this.include,
     });
+    return results;
   }
 
-  findByDateRange(startDate: Date, endDate: Date): Promise<ActivityLog[]> {
-    return this.prisma.activityLog.findMany({
+  async findByDateRange(startDate: Date, endDate: Date): Promise<any[]> {
+    const results = await this.prisma.activityLog.findMany({
       where: {
         createdAt: {
           gte: startDate,
@@ -95,5 +99,6 @@ export class ActivityLogsService {
       },
       include: this.include,
     });
+    return results;
   }
 }

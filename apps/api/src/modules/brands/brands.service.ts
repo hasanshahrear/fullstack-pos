@@ -1,19 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
+import { HttpResponseService } from '../http-response/http-response.service';
+import { HttpResponseException } from 'src/utils/exceptions';
 
 @Injectable()
 export class BrandsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private httpResponseService: HttpResponseService,
+  ) {}
 
-  create(createBrandDto: CreateBrandDto) {
-    return this.prisma.brand.create({
-      data: createBrandDto,
-      include: {
-        products: true,
-      },
-    });
+  async create(createBrandDto: CreateBrandDto) {
+    try {
+      await this.prisma.brand.create({
+        data: createBrandDto,
+      });
+
+      return this.httpResponseService.generate(
+        HttpStatus.CREATED,
+        null,
+        'Brand created successfully',
+      );
+    } catch (errors: unknown) {
+      throw new HttpResponseException({
+        status: HttpStatus.CONFLICT,
+        message: 'Brand code already found',
+        errors,
+      });
+    }
   }
 
   findAll() {
