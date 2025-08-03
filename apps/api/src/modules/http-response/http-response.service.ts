@@ -10,44 +10,44 @@ export class HttpResponseService {
   //==================================================================================================
   /**
    * gets the message
-   * @param status HTTP status
+   * @param statusCode HTTP status
    * @returns message
    */
-  private getMessage(status: number): string {
+  private getMessage(statusCode: number): string {
     return HttpResponseMessages[
-      HttpStatus[status].toString() as keyof typeof HttpResponseMessages
+      HttpStatus[statusCode].toString() as keyof typeof HttpResponseMessages
     ];
   }
 
   //==================================================================================================
   /**
    * gets the description
-   * @param status HTTP status
+   * @param statusCode HTTP status
    * @returns description
    */
-  private getDescription(status: number): string {
+  private getDescription(statusCode: number): string {
     return HttpResponseDescriptions[
-      HttpStatus[status].toString() as keyof typeof HttpResponseMessages
+      HttpStatus[statusCode].toString() as keyof typeof HttpResponseMessages
     ];
   }
 
   //==================================================================================================
   /**
    * generates the HTTP response
-   * @param status HTTP status
+   * @param statusCode HTTP statusCode
    * @param data data
    * @param message custom message
    * @param description custom description
    * @returns response
    */
   generate(
-    status: number,
+    statusCode: number,
     data: Record<string, unknown> | unknown[] | null = {},
-    message: string = this.getMessage(status),
-    description: string = this.getDescription(status),
+    message: string = this.getMessage(statusCode),
+    description: string = this.getDescription(statusCode),
   ): HttpResponse {
     const response: HttpResponse = {
-      status: status,
+      statusCode: statusCode,
       message: message,
       description: description,
       data: data,

@@ -8,19 +8,19 @@ import { HttpErrorResponse } from '../interfaces';
 export class HttpResponseException extends HttpException {
   /**
    * Http response exception contructor
-   * @param status HTTP status
+   * @param statusCode HTTP status
    * @param message custom message
    * @param errors errors
    * @returns error response
    */
-  constructor({ status, message, errors }: HttpErrorResponse) {
+  constructor({ statusCode, message, errors }: HttpErrorResponse) {
     super(
       {
-        status,
+        statusCode,
         message,
         errors,
       },
-      status,
+      statusCode,
     );
   }
 }

@@ -19,7 +19,6 @@ export class CustomersService {
         email: createCustomerDto.email,
         phone: createCustomerDto.phone,
         isActive: createCustomerDto.isActive ?? true,
-        loyaltyPoints: 0,
       },
       include: this.include,
     });
@@ -65,25 +64,6 @@ export class CustomersService {
   remove(id: number): Promise<Customer> {
     return this.prisma.customer.delete({
       where: { id },
-      include: this.include,
-    });
-  }
-
-  async updateLoyaltyPoints(id: number, points: number): Promise<Customer> {
-    const customer = await this.prisma.customer.findUnique({
-      where: { id },
-      select: { loyaltyPoints: true },
-    });
-
-    if (!customer) {
-      throw new Error('Customer not found');
-    }
-
-    return this.prisma.customer.update({
-      where: { id },
-      data: {
-        loyaltyPoints: customer.loyaltyPoints + points,
-      },
       include: this.include,
     });
   }

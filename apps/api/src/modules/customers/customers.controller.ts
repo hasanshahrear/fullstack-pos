@@ -44,14 +44,6 @@ export class CustomersController {
     return this.customersService.update(id, updateCustomerDto);
   }
 
-  @Patch(':id/loyalty-points')
-  updateLoyaltyPoints(
-    @Param('id', ParseIntPipe) id: number,
-    @Body('points', ParseIntPipe) points: number,
-  ) {
-    return this.customersService.updateLoyaltyPoints(id, points);
-  }
-
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.customersService.remove(id);

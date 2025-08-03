@@ -25,7 +25,7 @@ export class BrandsService {
       );
     } catch (errors: unknown) {
       throw new HttpResponseException({
-        status: HttpStatus.CONFLICT,
+        statusCode: HttpStatus.CONFLICT,
         message: 'Brand code already found',
         errors,
       });

@@ -12,5 +12,5 @@ export class CreateBrandDto {
   brandImage?: string;
 
   @IsBoolean()
-  brandStatus: boolean;
+  isActive: boolean;
 }

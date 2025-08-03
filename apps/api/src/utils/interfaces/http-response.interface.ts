@@ -2,7 +2,7 @@ export interface HttpResponse {
   /**
    * Represents the status code of the http response(https://en.wikipedia.org/wiki/List_of_HTTP_status_codes).
    */
-  status: number;
+  statusCode: number;
   /**
    * Represents a short message about the response status.
    */
@@ -21,7 +21,7 @@ export interface HttpErrorResponse {
   /**
    * Represents the status code of the http response(https://en.wikipedia.org/wiki/List_of_HTTP_status_codes).
    */
-  status: number;
+  statusCode: number;
   /**
    * Represents a short message about the response status.
    */
