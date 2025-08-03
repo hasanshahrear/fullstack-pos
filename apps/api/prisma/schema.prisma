@@ -21,7 +21,12 @@ model Category {
   categoryImage    String?
   categoryColor    String?
   categorySort     Int
-  categoryStatus   Boolean
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
 
   parentCategory Category?  @relation("ParentCategory", fields: [parentCategoryId], references: [id])
   subCategories  Category[] @relation("ParentCategory")
@@ -34,49 +39,79 @@ model Category {
 }
 
 model Brand {
-  id          Int       @id @default(autoincrement())
-  brandName   String
-  brandCode   String    @unique
-  brandImage  String?
-  brandStatus Boolean
-  products    Product[] @relation("ProductBrand")
+  id         Int     @id @default(autoincrement())
+  brandName  String
+  brandCode  String  @unique
+  brandImage String?
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
+  products Product[] @relation("ProductBrand")
 
   @@index([brandCode])
 }
 
 model Unit {
-  id            Int       @id @default(autoincrement())
-  unitName      String
-  unitShortName String
-  unitStatus    Boolean
-  products      Product[] @relation("ProductUnit")
+  id            Int    @id @default(autoincrement())
+  unitName      String @unique()
+  unitShortName String @unique()
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
+  products Product[] @relation("ProductUnit")
 }
 
 model ProductVariantOption {
-  id                 Int                              @id @default(autoincrement())
-  optionName         String
-  optionStatus       Boolean
+  id         Int    @id @default(autoincrement())
+  optionName String @unique()
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
   optionValues       ProductVariantOptionValue[]      @relation("VariantOptionValues")
   variantAssignments ProductVariantOptionAssignment[] @relation("VariantOptionAssignments")
 }
 
 model ProductVariantOptionValue {
-  id                 Int                              @id @default(autoincrement())
-  optionValueName    String
-  optionValueStatus  Boolean
+  id              Int    @id @default(autoincrement())
+  optionValueName String @unique()
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
   variantOptionId    Int
   variantOption      ProductVariantOption             @relation("VariantOptionValues", fields: [variantOptionId], references: [id])
   variantAssignments ProductVariantOptionAssignment[] @relation("VariantOptionValueAssignments")
 }
 
 model ProductVariantOptionAssignment {
-  id                   Int                       @id @default(autoincrement())
+  id                   Int @id @default(autoincrement())
   productVariantId     Int
   variantOptionId      Int
   variantOptionValueId Int
-  productVariant       ProductVariant            @relation("VariantAssignments", fields: [productVariantId], references: [id])
-  variantOption        ProductVariantOption      @relation("VariantOptionAssignments", fields: [variantOptionId], references: [id])
-  variantOptionValue   ProductVariantOptionValue @relation("VariantOptionValueAssignments", fields: [variantOptionValueId], references: [id])
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
+  productVariant     ProductVariant            @relation("VariantAssignments", fields: [productVariantId], references: [id])
+  variantOption      ProductVariantOption      @relation("VariantOptionAssignments", fields: [variantOptionId], references: [id])
+  variantOptionValue ProductVariantOptionValue @relation("VariantOptionValueAssignments", fields: [variantOptionValueId], references: [id])
 }
 
 model Product {
@@ -87,7 +122,6 @@ model Product {
   stockAlert         Int
   quantity           Int
   price              Float
-  productStatus      Boolean
   discountType       EDiscountType?
   discountedValue    Float?
   expireDate         DateTime?
@@ -99,6 +133,12 @@ model Product {
   brandId            Int?
   salesUnitId        Int
   taxId              Int?
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
 
   category       Category         @relation("ProductCategory", fields: [categoryId], references: [id])
   brand          Brand?           @relation("ProductBrand", fields: [brandId], references: [id])
@@ -157,29 +197,44 @@ model Purchase {
   warehouseId Int?
   supplierId  Int?
 
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
   supplier  Supplier?  @relation(fields: [supplierId], references: [id])
   product   Product    @relation("ProductPurchases", fields: [productId], references: [id])
   warehouse Warehouse? @relation("PurchaseWarehouse", fields: [warehouseId], references: [id])
 }
 
 model Supplier {
-  id        Int        @id @default(autoincrement())
-  name      String
-  email     String?
-  phone     String?
-  address   String?
-  isActive  Boolean    @default(true)
+  id      Int     @id @default(autoincrement())
+  name    String
+  email   String?
+  phone   String?
+  address String?
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
   purchases Purchase[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
 }
 
 model Tax {
-  id         Int         @id @default(autoincrement())
-  taxName    String
-  taxCode    String      @unique
-  taxRate    Float
-  isActive   Boolean
+  id      Int    @id @default(autoincrement())
+  taxName String
+  taxCode String @unique
+  taxRate Float
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
   products   Product[]   @relation("ProductTax")
   categories Category[]  @relation("CategoryTaxes")
   orderItems OrderItem[] @relation("OrderItemTax")
@@ -195,29 +250,47 @@ model Coupon {
   validUntil    DateTime?
   usageLimit    Int?
   usedCount     Int           @default(0)
-  isActive      Boolean
-  products      Product[]     @relation("ProductCoupons")
-  categories    Category[]    @relation("CategoryCoupons")
-  orderItems    OrderItem[]   @relation("OrderItemCoupon")
-  orders        Order[]       @relation("OrderCoupon")
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
+  products   Product[]   @relation("ProductCoupons")
+  categories Category[]  @relation("CategoryCoupons")
+  orderItems OrderItem[] @relation("OrderItemCoupon")
+  orders     Order[]     @relation("OrderCoupon")
 }
 
 model Branch {
-  id         Int         @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   branchName String
-  branchCode String      @unique
+  branchCode String  @unique
   address    String?
-  isActive   Boolean
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
   warehouses Warehouse[] @relation("BranchWarehouses")
   orders     Order[]     @relation("BranchOrders")
 }
 
 model Warehouse {
-  id                 Int             @id @default(autoincrement())
-  warehouseName      String
-  warehouseCode      String          @unique
-  branchId           Int
-  isActive           Boolean
+  id            Int    @id @default(autoincrement())
+  warehouseName String
+  warehouseCode String @unique
+  branchId      Int
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
   branch             Branch          @relation("BranchWarehouses", fields: [branchId], references: [id])
   bins               Bin[]           @relation("WarehouseBins")
   purchases          Purchase[]      @relation("PurchaseWarehouse")
@@ -232,11 +305,17 @@ model Warehouse {
 }
 
 model Bin {
-  id             Int            @id @default(autoincrement())
-  binCode        String         @unique
-  warehouseId    Int
-  description    String?
-  isActive       Boolean
+  id          Int     @id @default(autoincrement())
+  binCode     String  @unique
+  warehouseId Int
+  description String?
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
   warehouse      Warehouse      @relation("WarehouseBins", fields: [warehouseId], references: [id])
   binInventories BinInventory[] @relation("BinInventories")
 }
@@ -256,15 +335,18 @@ model BinInventory {
 }
 
 model Customer {
-  id            Int      @id @default(autoincrement())
-  customerName  String
-  email         String?  @unique
-  phone         String?
-  loyaltyPoints Int      @default(0)
-  isActive      Boolean
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  orders        Order[]  @relation("CustomerOrders")
+  id           Int     @id @default(autoincrement())
+  customerName String
+  email        String? @unique
+  phone        String?
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
+  orders Order[] @relation("CustomerOrders")
 }
 
 model Order {
@@ -276,8 +358,11 @@ model Order {
   taxId       Int?
   couponId    Int?
   status      EOrderStatus
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
 
   customer Customer? @relation("CustomerOrders", fields: [customerId], references: [id])
   branch   Branch?   @relation("BranchOrders", fields: [branchId], references: [id])
@@ -322,7 +407,12 @@ model Payment {
   paymentMethod String
   paymentStatus EPaymentStatus
   transactionId String?        @unique
-  createdAt     DateTime       @default(now())
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
 
   order Order @relation("OrderPayments", fields: [orderId], references: [id])
 }
@@ -336,8 +426,11 @@ model StockTransfer {
   productVariantId Int?
   quantity         Int
   status           ETransferStatus
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
 
   fromWarehouse  Warehouse       @relation("StockTransferFromWarehouse", fields: [fromWarehouseId], references: [id])
   toWarehouse    Warehouse       @relation("StockTransferToWarehouse", fields: [toWarehouseId], references: [id])
@@ -346,13 +439,19 @@ model StockTransfer {
 }
 
 model Return {
-  id          Int      @id @default(autoincrement())
-  orderId     Int      @unique
+  id          Int     @id @default(autoincrement())
+  orderId     Int     @unique
   reason      String?
   totalRefund Float
-  processed   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  order       Order    @relation(fields: [orderId], references: [id])
+  processed   Boolean @default(false)
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
+  order Order @relation(fields: [orderId], references: [id])
 }
 
 model ActivityLog {
@@ -366,15 +465,19 @@ model ActivityLog {
 }
 
 model User {
-  id          Int           @id @default(autoincrement())
-  name        String?
-  email       String?       @unique
-  phone       String?       @unique
-  password    String
-  role        EUserRole
-  isActive    Boolean       @default(true)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id       Int       @id @default(autoincrement())
+  name     String?
+  email    String?   @unique
+  phone    String?   @unique
+  password String
+  role     EUserRole
+
+  isActive  Boolean   @default(true)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt()
+  createdBy String?
+  updatedBy String?
+
   ActivityLog ActivityLog[]
 }
 
