@@ -33,19 +33,12 @@ export class BrandsService {
   }
 
   findAll() {
-    return this.prisma.brand.findMany({
-      include: {
-        products: true,
-      },
-    });
+    return this.prisma.brand.findMany();
   }
 
   findOne(id: number) {
     return this.prisma.brand.findUnique({
       where: { id },
-      include: {
-        products: true,
-      },
     });
   }
 
@@ -53,9 +46,6 @@ export class BrandsService {
     return this.prisma.brand.update({
       where: { id },
       data: updateBrandDto,
-      include: {
-        products: true,
-      },
     });
   }
 

@@ -8,5 +8,5 @@ export class CreateUnitDto {
   unitShortName: string;
 
   @IsBoolean()
-  unitStatus: boolean;
+  isActive: boolean;
 }

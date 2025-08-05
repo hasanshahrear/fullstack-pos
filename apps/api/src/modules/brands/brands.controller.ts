@@ -16,12 +16,15 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('brands')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class BrandsController {
   constructor(private readonly brandsService: BrandsService) {}
 
   @Post()
-  create(@Body(new ValidationPipe()) createBrandDto: CreateBrandDto) {
+  create(
+    @Body(new ValidationPipe())
+    createBrandDto: CreateBrandDto,
+  ) {
     return this.brandsService.create(createBrandDto);
   }
 
@@ -38,7 +41,7 @@ export class BrandsController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateBrandDto: UpdateBrandDto,
+    @Body(new ValidationPipe()) updateBrandDto: UpdateBrandDto,
   ) {
     return this.brandsService.update(id, updateBrandDto);
   }

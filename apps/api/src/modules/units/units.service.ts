@@ -1,19 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { UpdateUnitDto } from './dto/update-unit.dto';
+import { HttpResponseException } from 'src/utils/exceptions';
+import { HttpResponseService } from '../http-response/http-response.service';
 
 @Injectable()
 export class UnitsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private httpResponseService: HttpResponseService,
+  ) {}
 
-  create(createUnitDto: CreateUnitDto) {
-    return this.prisma.unit.create({
-      data: createUnitDto,
-      include: {
-        products: true,
-      },
-    });
+  async create(createUnitDto: CreateUnitDto) {
+    try {
+      await this.prisma.unit.create({
+        data: createUnitDto,
+      });
+
+      this.httpResponseService.generate(
+        HttpStatus.CREATED,
+        null,
+        'Unit created successfully',
+      );
+    } catch (errors: unknown) {
+      throw new HttpResponseException({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Failed to create unit',
+        errors,
+      });
+    }
   }
 
   findAll() {

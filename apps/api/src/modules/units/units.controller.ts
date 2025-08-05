@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   ParseIntPipe,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UnitsService } from './units.service';
 import { CreateUnitDto } from './dto/create-unit.dto';
@@ -20,7 +21,7 @@ export class UnitsController {
   constructor(private readonly unitsService: UnitsService) {}
 
   @Post()
-  create(@Body() createUnitDto: CreateUnitDto) {
+  create(@Body(new ValidationPipe()) createUnitDto: CreateUnitDto) {
     return this.unitsService.create(createUnitDto);
   }
 

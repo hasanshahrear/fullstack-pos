@@ -8,13 +8,21 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
       exceptionFactory: (errors: ValidationError[]) => {
-        const messages = errors
-          .map((err) => Object.values(err.constraints || {}))
-          .flat();
+        const messages = errors.flatMap((error) => {
+          if (error.constraints) return Object.values(error.constraints);
+          if (error.children?.length) {
+            return error.children.flatMap((child) =>
+              child.constraints ? Object.values(child.constraints) : [],
+            );
+          }
+          return [`property ${error.property} should not exist`];
+        });
 
         return new BadRequestException({
-          statusCode: 400,
+          status: 400,
           message: 'Validation failed',
           errors: messages,
         });
