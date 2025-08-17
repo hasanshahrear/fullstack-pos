@@ -18,7 +18,7 @@ export class UnitsService {
         data: createUnitDto,
       });
 
-      this.httpResponseService.generate(
+      return this.httpResponseService.generate(
         HttpStatus.CREATED,
         null,
         'Unit created successfully',
