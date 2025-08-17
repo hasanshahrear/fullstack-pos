@@ -22,6 +22,6 @@ export class CreateCategoryDto {
   @IsNumber()
   categorySort: number;
 
-  @IsBoolean()
-  categoryStatus: boolean;
+  @IsOptional()
+  isActive?: boolean;
 }
