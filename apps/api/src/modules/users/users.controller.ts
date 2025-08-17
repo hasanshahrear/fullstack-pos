@@ -7,21 +7,14 @@ import {
   Param,
   Delete,
   ParseIntPipe,
-  HttpStatus,
-  HttpCode,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { HttpResponseException } from 'src/utils/exceptions';
-import { HttpResponseService } from '../http-response/http-response.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(
-    private usersService: UsersService,
-    private httpResponseService: HttpResponseService,
-  ) {}
+  constructor(private usersService: UsersService) {}
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -30,21 +23,7 @@ export class UsersController {
 
   @Get()
   async findAll() {
-    try {
-      const users = await this.usersService.findAll();
-
-      return this.httpResponseService.generate(
-        HttpStatus.OK,
-        users,
-        'Users retrieved successfully',
-      );
-    } catch (errors) {
-      throw new HttpResponseException({
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Internal server error',
-        errors,
-      });
-    }
+    return this.usersService.findAll();
   }
 
   @Get(':id')
