@@ -14,54 +14,100 @@ export class UnitsService {
 
   async create(createUnitDto: CreateUnitDto) {
     try {
-      await this.prisma.unit.create({
+      const unit = await this.prisma.unit.create({
         data: createUnitDto,
       });
 
       return this.httpResponseService.generate(
         HttpStatus.CREATED,
-        null,
+        unit,
         'Unit created successfully',
       );
-    } catch (errors: unknown) {
+    } catch (errors) {
       throw new HttpResponseException({
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Failed to create unit',
+        message: 'Internal server error',
         errors,
       });
     }
   }
 
-  findAll() {
-    return this.prisma.unit.findMany({
-      include: {
-        products: true,
-      },
-    });
+  async findAll() {
+    try {
+      const units = await this.prisma.unit.findMany();
+
+      return this.httpResponseService.generate(
+        HttpStatus.OK,
+        units,
+        'Units retrieved successfully',
+      );
+    } catch (errors) {
+      throw new HttpResponseException({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+        errors,
+      });
+    }
   }
 
-  findOne(id: number) {
-    return this.prisma.unit.findUnique({
-      where: { id },
-      include: {
-        products: true,
-      },
-    });
+  async findOne(id: number) {
+    try {
+      const unit = await this.prisma.unit.findUnique({
+        where: { id },
+      });
+
+      return this.httpResponseService.generate(
+        HttpStatus.OK,
+        unit,
+        'Unit retrieved successfully',
+      );
+    } catch (errors) {
+      throw new HttpResponseException({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+        errors,
+      });
+    }
   }
 
-  update(id: number, updateUnitDto: UpdateUnitDto) {
-    return this.prisma.unit.update({
-      where: { id },
-      data: updateUnitDto,
-      include: {
-        products: true,
-      },
-    });
+  async update(id: number, updateUnitDto: UpdateUnitDto) {
+    try {
+      const unit = await this.prisma.unit.update({
+        where: { id },
+        data: updateUnitDto,
+      });
+
+      return this.httpResponseService.generate(
+        HttpStatus.OK,
+        unit,
+        'Unit updated successfully',
+      );
+    } catch (errors) {
+      throw new HttpResponseException({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+        errors,
+      });
+    }
   }
 
-  remove(id: number) {
-    return this.prisma.unit.delete({
-      where: { id },
-    });
+  async remove(id: number) {
+    try {
+      await this.prisma.unit.delete({
+        where: { id },
+      });
+
+      return this.httpResponseService.generate(
+        HttpStatus.OK,
+        null,
+        'Unit deleted successfully',
+      );
+    } catch (errors) {
+      throw new HttpResponseException({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+        errors,
+      });
+    }
   }
 }
