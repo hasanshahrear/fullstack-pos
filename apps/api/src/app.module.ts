@@ -13,6 +13,7 @@ import { PaymentsModule } from './modules/payments/payments.module';
 import { StockTransfersModule } from './modules/stock-transfers/stock-transfers.module';
 import { ReturnsModule } from './modules/returns/returns.module';
 import { ActivityLogsModule } from './modules/activity-logs/activity-logs.module';
+import { ProductVariantOptionsModule } from './modules/product-variant-options/product-variant-options.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ActivityLogsModule } from './modules/activity-logs/activity-logs.module
     StockTransfersModule,
     ReturnsModule,
     ActivityLogsModule,
+    ProductVariantOptionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
