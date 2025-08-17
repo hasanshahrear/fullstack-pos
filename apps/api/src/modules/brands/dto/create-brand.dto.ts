@@ -12,5 +12,6 @@ export class CreateBrandDto {
   brandImage?: string;
 
   @IsBoolean()
+  @IsOptional()
   isActive: boolean;
 }

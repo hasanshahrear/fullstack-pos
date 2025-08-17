@@ -21,37 +21,93 @@ export class BrandsService {
       return this.httpResponseService.generate(
         HttpStatus.CREATED,
         null,
-        'Brand created successfully',
+        'Brand create successfully',
       );
-    } catch (errors: unknown) {
+    } catch (errors) {
       throw new HttpResponseException({
-        statusCode: HttpStatus.CONFLICT,
-        message: 'Brand code already found',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
         errors,
       });
     }
   }
 
-  findAll() {
-    return this.prisma.brand.findMany();
+  async findAll() {
+    try {
+      const brands = await this.prisma.brand.findMany();
+
+      return this.httpResponseService.generate(
+        HttpStatus.OK,
+        brands,
+        'Brands retrieved successfully',
+      );
+    } catch (errors) {
+      throw new HttpResponseException({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+        errors,
+      });
+    }
   }
 
-  findOne(id: number) {
-    return this.prisma.brand.findUnique({
-      where: { id },
-    });
+  async findOne(id: number) {
+    try {
+      const brand = await this.prisma.brand.findUnique({
+        where: { id },
+      });
+
+      return this.httpResponseService.generate(
+        HttpStatus.OK,
+        brand,
+        'Brand retrieved successfully',
+      );
+    } catch (errors) {
+      throw new HttpResponseException({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+        errors,
+      });
+    }
   }
 
-  update(id: number, updateBrandDto: UpdateBrandDto) {
-    return this.prisma.brand.update({
-      where: { id },
-      data: updateBrandDto,
-    });
+  async update(id: number, updateBrandDto: UpdateBrandDto) {
+    try {
+      const brand = await this.prisma.brand.update({
+        where: { id },
+        data: updateBrandDto,
+      });
+
+      return this.httpResponseService.generate(
+        HttpStatus.OK,
+        brand,
+        'Brand update successfully',
+      );
+    } catch (errors) {
+      throw new HttpResponseException({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+        errors,
+      });
+    }
   }
 
-  remove(id: number) {
-    return this.prisma.brand.delete({
-      where: { id },
-    });
+  async remove(id: number) {
+    try {
+      await this.prisma.brand.delete({
+        where: { id },
+      });
+
+      return this.httpResponseService.generate(
+        HttpStatus.OK,
+        null,
+        'Brand deleted successfully',
+      );
+    } catch (errors) {
+      throw new HttpResponseException({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+        errors,
+      });
+    }
   }
 }
