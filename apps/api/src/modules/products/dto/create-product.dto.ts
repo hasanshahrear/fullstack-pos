@@ -84,4 +84,8 @@ export class CreateProductDto {
   @Type(() => CreateProductVariantDto)
   @IsOptional()
   variants?: CreateProductVariantDto[];
+
+  @IsArray()
+  @IsOptional()
+  addons?: number[];
 }

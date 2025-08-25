@@ -22,6 +22,11 @@ export class ProductsService {
           variants: {
             create: variants,
           },
+          addons: {
+            create: createProductDto?.addons?.map((addonId) => ({
+              addonProductId: addonId,
+            })),
+          },
         },
         include: {
           variants: true,
@@ -29,6 +34,11 @@ export class ProductsService {
           brand: true,
           salesUnit: true,
           tax: true,
+          addons: {
+            include: {
+              addonProduct: true,
+            },
+          },
         },
       });
       return this.httpResponseService.generate(
@@ -54,6 +64,11 @@ export class ProductsService {
           brand: true,
           salesUnit: true,
           tax: true,
+          addons: {
+            include: {
+              addonProduct: true,
+            },
+          },
         },
       });
 
@@ -81,6 +96,11 @@ export class ProductsService {
           brand: true,
           salesUnit: true,
           tax: true,
+          addons: {
+            include: {
+              addonProduct: true,
+            },
+          },
         },
       });
 
@@ -112,6 +132,12 @@ export class ProductsService {
               update: variant,
             })),
           },
+          addons: {
+            deleteMany: {},
+            create: updateProductDto?.addons?.map((addonId) => ({
+              addonProductId: addonId,
+            })),
+          },
         },
         include: {
           variants: true,
@@ -119,6 +145,11 @@ export class ProductsService {
           brand: true,
           salesUnit: true,
           tax: true,
+          addons: {
+            include: {
+              addonProduct: true,
+            },
+          },
         },
       });
 
