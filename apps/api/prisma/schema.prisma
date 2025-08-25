@@ -94,7 +94,7 @@ model ProductVariantOptionValue {
   updatedBy String?
 
   variantOptionId Int
-  variantOption   ProductVariantOption @relation("VariantOptionValues", fields: [variantOptionId], references: [id])
+  variantOption   ProductVariantOption @relation("VariantOptionValues", fields: [variantOptionId], references: [id], onDelete: Cascade)
   ProductVariant  ProductVariant[]
 }
 
