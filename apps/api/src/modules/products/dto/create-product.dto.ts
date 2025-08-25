@@ -11,6 +11,7 @@ import {
   Min,
 } from 'class-validator';
 import { CreateProductVariantDto } from './create-product-variant.dto';
+import { CreateGroupProductDto } from './create-group-product.dto';
 
 export class CreateProductDto {
   @IsString()
@@ -88,4 +89,10 @@ export class CreateProductDto {
   @IsArray()
   @IsOptional()
   addons?: number[];
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateGroupProductDto)
+  @IsOptional()
+  groupProducts?: CreateGroupProductDto[];
 }

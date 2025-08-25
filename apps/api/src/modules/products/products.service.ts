@@ -14,19 +14,30 @@ export class ProductsService {
   ) {}
 
   async create(createProductDto: CreateProductDto) {
+    console.log({ createProductDto });
     try {
-      const { variants, ...productData } = createProductDto;
+      const { variants, addons, groupProducts, ...productData } =
+        createProductDto;
       const product = await this.prisma.product.create({
         data: {
           ...productData,
-          variants: {
-            create: variants,
-          },
-          addons: {
-            create: createProductDto?.addons?.map((addonId) => ({
-              addonProductId: addonId,
-            })),
-          },
+          ...(variants && {
+            variants: {
+              create: variants,
+            },
+          }),
+          ...(addons && {
+            addons: {
+              create: addons.map((addonId) => ({
+                addonProductId: addonId,
+              })),
+            },
+          }),
+          ...(groupProducts && {
+            groupProducts: {
+              create: groupProducts,
+            },
+          }),
         },
         include: {
           variants: true,
@@ -37,6 +48,12 @@ export class ProductsService {
           addons: {
             include: {
               addonProduct: true,
+            },
+          },
+          groupProducts: {
+            include: {
+              product: true,
+              productVariant: true,
             },
           },
         },
@@ -69,6 +86,12 @@ export class ProductsService {
               addonProduct: true,
             },
           },
+          groupProducts: {
+            include: {
+              product: true,
+              productVariant: true,
+            },
+          },
         },
       });
 
@@ -99,6 +122,11 @@ export class ProductsService {
           addons: {
             include: {
               addonProduct: true,
+            },
+          },
+          groupProducts: {
+            include: {
+              product: true,
             },
           },
         },
@@ -138,6 +166,10 @@ export class ProductsService {
               addonProductId: addonId,
             })),
           },
+          groupProducts: {
+            deleteMany: {},
+            create: updateProductDto.groupProducts,
+          },
         },
         include: {
           variants: true,
@@ -148,6 +180,12 @@ export class ProductsService {
           addons: {
             include: {
               addonProduct: true,
+            },
+          },
+          groupProducts: {
+            include: {
+              product: true,
+              productVariant: true,
             },
           },
         },

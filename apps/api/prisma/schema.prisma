@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,94 +8,84 @@ datasource db {
 }
 
 model Category {
-  id               Int     @id @default(autoincrement())
+  id               Int        @id @default(autoincrement())
   categoryName     String
-  categoryCode     String  @unique
+  categoryCode     String     @unique
   parentCategoryId Int?
   categoryImage    String?
   categoryColor    String?
   categorySort     Int
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  parentCategory Category?  @relation("ParentCategory", fields: [parentCategoryId], references: [id])
-  subCategories  Category[] @relation("ParentCategory")
-  products       Product[]  @relation("ProductCategory")
-  taxes          Tax[]      @relation("CategoryTaxes")
-  coupons        Coupon[]   @relation("CategoryCoupons")
+  createdAt        DateTime?  @default(now())
+  createdBy        String?
+  isActive         Boolean    @default(true)
+  updatedAt        DateTime?  @updatedAt
+  updatedBy        String?
+  parentCategory   Category?  @relation("ParentCategory", fields: [parentCategoryId], references: [id])
+  subCategories    Category[] @relation("ParentCategory")
+  products         Product[]  @relation("ProductCategory")
+  coupons          Coupon[]   @relation("CategoryCoupons")
+  taxes            Tax[]      @relation("CategoryTaxes")
 
   @@index([categoryCode])
   @@index([parentCategoryId])
 }
 
 model Brand {
-  id         Int     @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   brandName  String
-  brandCode  String  @unique
+  brandCode  String    @unique
   brandImage String?
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  products Product[] @relation("ProductBrand")
+  createdAt  DateTime? @default(now())
+  createdBy  String?
+  isActive   Boolean   @default(true)
+  updatedAt  DateTime? @updatedAt
+  updatedBy  String?
+  products   Product[] @relation("ProductBrand")
 
   @@index([brandCode])
 }
 
 model Unit {
-  id            Int    @id @default(autoincrement())
-  unitName      String @unique()
-  unitShortName String @unique()
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  products Product[] @relation("ProductUnit")
+  id            Int       @id @default(autoincrement())
+  unitName      String    @unique
+  unitShortName String    @unique
+  createdAt     DateTime? @default(now())
+  createdBy     String?
+  isActive      Boolean   @default(true)
+  updatedAt     DateTime? @updatedAt
+  updatedBy     String?
+  products      Product[] @relation("ProductUnit")
 }
 
 model ProductVariantOption {
-  id         Int    @id @default(autoincrement())
-  optionName String @unique()
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  optionValues   ProductVariantOptionValue[] @relation("VariantOptionValues")
+  id             Int                         @id @default(autoincrement())
+  optionName     String                      @unique
+  createdAt      DateTime?                   @default(now())
+  createdBy      String?
+  isActive       Boolean                     @default(true)
+  updatedAt      DateTime?                   @updatedAt
+  updatedBy      String?
   ProductVariant ProductVariant[]
+  optionValues   ProductVariantOptionValue[] @relation("VariantOptionValues")
 }
 
 model ProductVariantOptionValue {
-  id              Int    @id @default(autoincrement())
-  optionValueName String @unique()
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
+  id              Int                  @id @default(autoincrement())
+  optionValueName String               @unique
   variantOptionId Int
-  variantOption   ProductVariantOption @relation("VariantOptionValues", fields: [variantOptionId], references: [id], onDelete: Cascade)
+  createdAt       DateTime?            @default(now())
+  createdBy       String?
+  isActive        Boolean              @default(true)
+  updatedAt       DateTime?            @updatedAt
+  updatedBy       String?
   ProductVariant  ProductVariant[]
+  variantOption   ProductVariantOption @relation("VariantOptionValues", fields: [variantOptionId], references: [id], onDelete: Cascade)
 }
 
 model Product {
-  id                 Int            @id @default(autoincrement())
+  id                 Int              @id @default(autoincrement())
   productName        String
-  productSKU         String         @unique
+  productSKU         String           @unique
   minQuantity        Int
   stockAlert         Int
   quantity           Int
@@ -117,29 +101,25 @@ model Product {
   brandId            Int?
   salesUnitId        Int
   taxId              Int?
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  category       Category         @relation("ProductCategory", fields: [categoryId], references: [id])
-  brand          Brand?           @relation("ProductBrand", fields: [brandId], references: [id])
-  salesUnit      Unit             @relation("ProductUnit", fields: [salesUnitId], references: [id])
-  tax            Tax?             @relation("ProductTax", fields: [taxId], references: [id])
-  variants       ProductVariant[] @relation("ProductVariants")
-  purchases      Purchase[]       @relation("ProductPurchases")
-  groupProducts  GroupProduct[]   @relation("GroupProductComponents")
-  groupedBy      GroupProduct[]   @relation("GroupedProduct")
-  coupons        Coupon[]         @relation("ProductCoupons")
-  binInventories BinInventory[]   @relation("BinInventoryProduct")
-  orderItems     OrderItem[]      @relation("OrderItemProduct")
-
-  stockTransfers StockTransfer[] @relation("ProductStockTransfers")
-
-  addons       AddonProduct[] @relation("ProductAddons")
-  addonProduct AddonProduct[] @relation("AddedTo")
+  isActive           Boolean          @default(true)
+  createdAt          DateTime?        @default(now())
+  updatedAt          DateTime?        @updatedAt
+  createdBy          String?
+  updatedBy          String?
+  addonProduct       AddonProduct[]   @relation("AddedTo")
+  addons             AddonProduct[]   @relation("ProductAddons")
+  binInventories     BinInventory[]   @relation("BinInventoryProduct")
+  groupProducts      GroupProduct[]   @relation("GroupProductComponents")
+  orderItems         OrderItem[]      @relation("OrderItemProduct")
+  brand              Brand?           @relation("ProductBrand", fields: [brandId], references: [id])
+  category           Category         @relation("ProductCategory", fields: [categoryId], references: [id])
+  salesUnit          Unit             @relation("ProductUnit", fields: [salesUnitId], references: [id])
+  tax                Tax?             @relation("ProductTax", fields: [taxId], references: [id])
+  variants           ProductVariant[] @relation("ProductVariants")
+  purchases          Purchase[]       @relation("ProductPurchases")
+  stockTransfers     StockTransfer[]  @relation("ProductStockTransfers")
+  coupons            Coupon[]         @relation("ProductCoupons")
+  // groupProduct       GroupProduct[]   @relation("GroupProductParent")
 
   @@index([categoryId])
   @@index([brandId])
@@ -148,19 +128,17 @@ model Product {
 }
 
 model AddonProduct {
-  id Int @id @default(autoincrement())
-
+  id             Int     @id @default(autoincrement())
   productId      Int
   addonProductId Int
-
-  product      Product @relation("ProductAddons", fields: [productId], references: [id], onDelete: Cascade)
-  addonProduct Product @relation("AddedTo", fields: [addonProductId], references: [id], onDelete: Cascade)
+  addonProduct   Product @relation("AddedTo", fields: [addonProductId], references: [id], onDelete: Cascade)
+  product        Product @relation("ProductAddons", fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([productId, addonProductId], name: "unique_addon_per_product")
 }
 
 model ProductVariant {
-  id                     Int            @id @default(autoincrement())
+  id                     Int                       @id @default(autoincrement())
   variantName            String
   variantQuantity        Int
   variantPrice           Float
@@ -169,81 +147,76 @@ model ProductVariant {
   productId              Int
   variantOptionId        Int
   variantOptionValueId   Int
-  isActive               Boolean        @default(true)
-
-  product            Product                   @relation("ProductVariants", fields: [productId], references: [id], onDelete: Cascade)
-  groupProducts      GroupProduct[]            @relation("GroupProductVariant")
-  binInventories     BinInventory[]            @relation("BinInventoryVariant")
-  orderItems         OrderItem[]               @relation("OrderItemVariant")
-  stockTransfers     StockTransfer[]           @relation("StockTransferVariant")
-  variantOption      ProductVariantOption      @relation(fields: [variantOptionId], references: [id])
-  variantOptionValue ProductVariantOptionValue @relation(fields: [variantOptionValueId], references: [id])
+  isActive               Boolean                   @default(true)
+  binInventories         BinInventory[]            @relation("BinInventoryVariant")
+  groupProducts          GroupProduct[]            @relation("GroupProductVariant")
+  orderItems             OrderItem[]               @relation("OrderItemVariant")
+  product                Product                   @relation("ProductVariants", fields: [productId], references: [id], onDelete: Cascade)
+  variantOption          ProductVariantOption      @relation(fields: [variantOptionId], references: [id])
+  variantOptionValue     ProductVariantOptionValue @relation(fields: [variantOptionValueId], references: [id])
+  stockTransfers         StockTransfer[]           @relation("StockTransferVariant")
 
   @@unique([productId, variantOptionId, variantOptionValueId], name: "unique_variant_per_product")
 }
 
 model GroupProduct {
-  id               Int  @id @default(autoincrement())
-  groupProductId   Int
+  id                    Int  @id @default(autoincrement())
+  groupProductId        Int
+  groupProductQuantity  Int
+  groupProductVariantId Int?
+
   productId        Int
-  productQuantity  Int
   productVariantId Int?
 
-  groupProduct   Product         @relation("GroupedProduct", fields: [groupProductId], references: [id])
   product        Product         @relation("GroupProductComponents", fields: [productId], references: [id])
   productVariant ProductVariant? @relation("GroupProductVariant", fields: [productVariantId], references: [id])
+  // groupProduct   Product         @relation("GroupProductParent", fields: [groupProductId], references: [id])
 }
 
 model Purchase {
-  id          Int   @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   quantity    Int
   price       Float
-  productId   Int
   warehouseId Int?
+  productId   Int
   supplierId  Int?
-
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  supplier  Supplier?  @relation(fields: [supplierId], references: [id])
-  product   Product    @relation("ProductPurchases", fields: [productId], references: [id])
-  warehouse Warehouse? @relation("PurchaseWarehouse", fields: [warehouseId], references: [id])
+  createdAt   DateTime?  @default(now())
+  createdBy   String?
+  updatedAt   DateTime?  @updatedAt
+  updatedBy   String?
+  product     Product    @relation("ProductPurchases", fields: [productId], references: [id])
+  supplier    Supplier?  @relation(fields: [supplierId], references: [id])
+  warehouse   Warehouse? @relation("PurchaseWarehouse", fields: [warehouseId], references: [id])
 }
 
 model Supplier {
-  id      Int     @id @default(autoincrement())
-  name    String
-  email   String?
-  phone   String?
-  address String?
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  isActive  Boolean    @default(true)
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @updatedAt
   createdBy String?
   updatedBy String?
-
   purchases Purchase[]
 }
 
 model Tax {
-  id      Int    @id @default(autoincrement())
-  taxName String
-  taxCode String @unique
-  taxRate Float
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
+  id         Int         @id @default(autoincrement())
+  taxName    String
+  taxCode    String      @unique
+  taxRate    Float
+  isActive   Boolean     @default(true)
+  createdAt  DateTime?   @default(now())
+  createdBy  String?
+  updatedAt  DateTime?   @updatedAt
+  updatedBy  String?
+  orders     Order[]     @relation("OrderTax")
+  orderItems OrderItem[] @relation("OrderItemTax")
   products   Product[]   @relation("ProductTax")
   categories Category[]  @relation("CategoryTaxes")
-  orderItems OrderItem[] @relation("OrderItemTax")
-  orders     Order[]     @relation("OrderTax")
 }
 
 model Coupon {
@@ -255,103 +228,91 @@ model Coupon {
   validUntil    DateTime?
   usageLimit    Int?
   usedCount     Int           @default(0)
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  products   Product[]   @relation("ProductCoupons")
-  categories Category[]  @relation("CategoryCoupons")
-  orderItems OrderItem[] @relation("OrderItemCoupon")
-  orders     Order[]     @relation("OrderCoupon")
+  isActive      Boolean       @default(true)
+  createdAt     DateTime?     @default(now())
+  createdBy     String?
+  updatedAt     DateTime?     @updatedAt
+  updatedBy     String?
+  orders        Order[]       @relation("OrderCoupon")
+  orderItems    OrderItem[]   @relation("OrderItemCoupon")
+  categories    Category[]    @relation("CategoryCoupons")
+  products      Product[]     @relation("ProductCoupons")
 }
 
 model Branch {
-  id         Int     @id @default(autoincrement())
+  id         Int         @id @default(autoincrement())
   branchName String
-  branchCode String  @unique
+  branchCode String      @unique
   address    String?
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  warehouses Warehouse[] @relation("BranchWarehouses")
+  isActive   Boolean     @default(true)
+  createdAt  DateTime?   @default(now())
+  createdBy  String?
+  updatedAt  DateTime?   @updatedAt
+  updatedBy  String?
   orders     Order[]     @relation("BranchOrders")
+  warehouses Warehouse[] @relation("BranchWarehouses")
 }
 
 model Warehouse {
-  id            Int    @id @default(autoincrement())
-  warehouseName String
-  warehouseCode String @unique
-  branchId      Int
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  branch             Branch          @relation("BranchWarehouses", fields: [branchId], references: [id])
+  id                 Int             @id @default(autoincrement())
+  warehouseName      String
+  warehouseCode      String          @unique
+  branchId           Int
+  isActive           Boolean         @default(true)
+  createdAt          DateTime?       @default(now())
+  createdBy          String?
+  updatedAt          DateTime?       @updatedAt
+  updatedBy          String?
   bins               Bin[]           @relation("WarehouseBins")
-  purchases          Purchase[]      @relation("PurchaseWarehouse")
   binInventories     BinInventory[]  @relation("WarehouseBinInventories")
+  orderItems         OrderItem[]     @relation("OrderItemWarehouse")
+  purchases          Purchase[]      @relation("PurchaseWarehouse")
   stockTransfersFrom StockTransfer[] @relation("StockTransferFromWarehouse")
   stockTransfersTo   StockTransfer[] @relation("StockTransferToWarehouse")
-
-  orderItems OrderItem[] @relation("OrderItemWarehouse")
+  branch             Branch          @relation("BranchWarehouses", fields: [branchId], references: [id])
 
   @@index([warehouseCode])
   @@index([branchId])
 }
 
 model Bin {
-  id          Int     @id @default(autoincrement())
-  binCode     String  @unique
-  warehouseId Int
-  description String?
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
+  id             Int            @id @default(autoincrement())
+  binCode        String         @unique
+  warehouseId    Int
+  description    String?
+  isActive       Boolean        @default(true)
+  createdAt      DateTime?      @default(now())
+  createdBy      String?
+  updatedAt      DateTime?      @updatedAt
+  updatedBy      String?
   warehouse      Warehouse      @relation("WarehouseBins", fields: [warehouseId], references: [id])
   binInventories BinInventory[] @relation("BinInventories")
 }
 
 model BinInventory {
-  id               Int  @id @default(autoincrement())
+  id               Int             @id @default(autoincrement())
   warehouseId      Int
   binId            Int
   productId        Int
   productVariantId Int?
   quantity         Int
-
-  warehouse      Warehouse       @relation("WarehouseBinInventories", fields: [warehouseId], references: [id])
-  bin            Bin             @relation("BinInventories", fields: [binId], references: [id])
-  product        Product         @relation("BinInventoryProduct", fields: [productId], references: [id])
-  productVariant ProductVariant? @relation("BinInventoryVariant", fields: [productVariantId], references: [id])
+  bin              Bin             @relation("BinInventories", fields: [binId], references: [id])
+  product          Product         @relation("BinInventoryProduct", fields: [productId], references: [id])
+  productVariant   ProductVariant? @relation("BinInventoryVariant", fields: [productVariantId], references: [id])
+  warehouse        Warehouse       @relation("WarehouseBinInventories", fields: [warehouseId], references: [id])
 }
 
 model Customer {
-  id           Int     @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   customerName String
-  email        String? @unique
+  email        String?   @unique
   phone        String?
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  orders Order[] @relation("CustomerOrders")
+  isActive     Boolean   @default(true)
+  createdAt    DateTime? @default(now())
+  updatedAt    DateTime? @updatedAt
+  createdBy    String?
+  updatedBy    String?
+  orders       Order[]   @relation("CustomerOrders")
 }
 
 model Order {
@@ -362,40 +323,36 @@ model Order {
   totalAmount Float
   taxId       Int?
   couponId    Int?
+  createdAt   DateTime?    @default(now())
+  updatedAt   DateTime?    @updatedAt
+  createdBy   String?
+  updatedBy   String?
   status      EOrderStatus
-
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  customer Customer? @relation("CustomerOrders", fields: [customerId], references: [id])
-  branch   Branch?   @relation("BranchOrders", fields: [branchId], references: [id])
-  tax      Tax?      @relation("OrderTax", fields: [taxId], references: [id])
-  coupon   Coupon?   @relation("OrderCoupon", fields: [couponId], references: [id])
-
-  orderItems OrderItem[] @relation("OrderItems")
-  payments   Payment[]   @relation("OrderPayments")
-  Return     Return?
+  branch      Branch?      @relation("BranchOrders", fields: [branchId], references: [id])
+  coupon      Coupon?      @relation("OrderCoupon", fields: [couponId], references: [id])
+  customer    Customer?    @relation("CustomerOrders", fields: [customerId], references: [id])
+  tax         Tax?         @relation("OrderTax", fields: [taxId], references: [id])
+  orderItems  OrderItem[]  @relation("OrderItems")
+  payments    Payment[]    @relation("OrderPayments")
+  Return      Return?
 }
 
 model OrderItem {
-  id               Int   @id @default(autoincrement())
+  id               Int             @id @default(autoincrement())
   orderId          Int
   productId        Int
   productVariantId Int?
-  warehouseId      Int?
   quantity         Int
   unitPrice        Float
-  taxId            Int?
   couponId         Int?
-
-  order          Order           @relation("OrderItems", fields: [orderId], references: [id])
-  product        Product         @relation("OrderItemProduct", fields: [productId], references: [id])
-  productVariant ProductVariant? @relation("OrderItemVariant", fields: [productVariantId], references: [id])
-  warehouse      Warehouse?      @relation("OrderItemWarehouse", fields: [warehouseId], references: [id])
-  tax            Tax?            @relation("OrderItemTax", fields: [taxId], references: [id])
-  coupon         Coupon?         @relation("OrderItemCoupon", fields: [couponId], references: [id])
+  taxId            Int?
+  warehouseId      Int?
+  coupon           Coupon?         @relation("OrderItemCoupon", fields: [couponId], references: [id])
+  order            Order           @relation("OrderItems", fields: [orderId], references: [id])
+  product          Product         @relation("OrderItemProduct", fields: [productId], references: [id])
+  productVariant   ProductVariant? @relation("OrderItemVariant", fields: [productVariantId], references: [id])
+  tax              Tax?            @relation("OrderItemTax", fields: [taxId], references: [id])
+  warehouse        Warehouse?      @relation("OrderItemWarehouse", fields: [warehouseId], references: [id])
 
   @@index([orderId])
   @@index([productId])
@@ -410,16 +367,14 @@ model Payment {
   orderId       Int
   amount        Float
   paymentMethod String
-  paymentStatus EPaymentStatus
   transactionId String?        @unique
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  order Order @relation("OrderPayments", fields: [orderId], references: [id])
+  createdAt     DateTime?      @default(now())
+  createdBy     String?
+  isActive      Boolean        @default(true)
+  updatedAt     DateTime?      @updatedAt
+  updatedBy     String?
+  paymentStatus EPaymentStatus
+  order         Order          @relation("OrderPayments", fields: [orderId], references: [id])
 }
 
 model StockTransfer {
@@ -430,33 +385,29 @@ model StockTransfer {
   productId        Int
   productVariantId Int?
   quantity         Int
+  createdAt        DateTime?       @default(now())
+  updatedAt        DateTime?       @updatedAt
+  createdBy        String?
+  updatedBy        String?
   status           ETransferStatus
-
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  fromWarehouse  Warehouse       @relation("StockTransferFromWarehouse", fields: [fromWarehouseId], references: [id])
-  toWarehouse    Warehouse       @relation("StockTransferToWarehouse", fields: [toWarehouseId], references: [id])
-  product        Product         @relation("ProductStockTransfers", fields: [productId], references: [id])
-  productVariant ProductVariant? @relation("StockTransferVariant", fields: [productVariantId], references: [id])
+  fromWarehouse    Warehouse       @relation("StockTransferFromWarehouse", fields: [fromWarehouseId], references: [id])
+  product          Product         @relation("ProductStockTransfers", fields: [productId], references: [id])
+  productVariant   ProductVariant? @relation("StockTransferVariant", fields: [productVariantId], references: [id])
+  toWarehouse      Warehouse       @relation("StockTransferToWarehouse", fields: [toWarehouseId], references: [id])
 }
 
 model Return {
-  id          Int     @id @default(autoincrement())
-  orderId     Int     @unique
+  id          Int       @id @default(autoincrement())
+  orderId     Int       @unique
   reason      String?
   totalRefund Float
-  processed   Boolean @default(false)
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  order Order @relation(fields: [orderId], references: [id])
+  processed   Boolean   @default(false)
+  createdAt   DateTime? @default(now())
+  createdBy   String?
+  isActive    Boolean   @default(true)
+  updatedAt   DateTime? @updatedAt
+  updatedBy   String?
+  order       Order     @relation(fields: [orderId], references: [id])
 }
 
 model ActivityLog {
@@ -470,19 +421,17 @@ model ActivityLog {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  name     String?
-  email    String?   @unique
-  phone    String?   @unique
-  password String
-  role     EUserRole
-
-  isActive  Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
+  id          Int           @id @default(autoincrement())
+  name        String?
+  email       String?       @unique
+  phone       String?       @unique
+  password    String
+  isActive    Boolean       @default(true)
+  createdAt   DateTime?     @default(now())
+  updatedAt   DateTime?     @updatedAt
+  createdBy   String?
+  updatedBy   String?
+  role        EUserRole
   ActivityLog ActivityLog[]
 }
 
