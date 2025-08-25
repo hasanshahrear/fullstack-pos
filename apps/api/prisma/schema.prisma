@@ -79,8 +79,8 @@ model ProductVariantOption {
   createdBy String?
   updatedBy String?
 
-  optionValues       ProductVariantOptionValue[]      @relation("VariantOptionValues")
-  variantAssignments ProductVariantOptionAssignment[] @relation("VariantOptionAssignments")
+  optionValues   ProductVariantOptionValue[] @relation("VariantOptionValues")
+  ProductVariant ProductVariant[]
 }
 
 model ProductVariantOptionValue {
@@ -93,25 +93,9 @@ model ProductVariantOptionValue {
   createdBy String?
   updatedBy String?
 
-  variantOptionId    Int
-  variantOption      ProductVariantOption             @relation("VariantOptionValues", fields: [variantOptionId], references: [id])
-  variantAssignments ProductVariantOptionAssignment[] @relation("VariantOptionValueAssignments")
-}
-
-model ProductVariantOptionAssignment {
-  id                   Int @id @default(autoincrement())
-  productVariantId     Int
-  variantOptionId      Int
-  variantOptionValueId Int
-
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  productVariant     ProductVariant            @relation("VariantAssignments", fields: [productVariantId], references: [id])
-  variantOption      ProductVariantOption      @relation("VariantOptionAssignments", fields: [variantOptionId], references: [id])
-  variantOptionValue ProductVariantOptionValue @relation("VariantOptionValueAssignments", fields: [variantOptionValueId], references: [id])
+  variantOptionId Int
+  variantOption   ProductVariantOption @relation("VariantOptionValues", fields: [variantOptionId], references: [id])
+  ProductVariant  ProductVariant[]
 }
 
 model Product {
@@ -168,13 +152,19 @@ model ProductVariant {
   variantDiscountType    EDiscountType?
   variantDiscountedValue Float?
   productId              Int
+  variantOptionId        Int
+  variantOptionValueId   Int
+  isActive               Boolean        @default(true)
 
-  product            Product                          @relation("ProductVariants", fields: [productId], references: [id])
-  variantAssignments ProductVariantOptionAssignment[] @relation("VariantAssignments")
-  groupProducts      GroupProduct[]                   @relation("GroupProductVariant")
-  binInventories     BinInventory[]                   @relation("BinInventoryVariant")
-  orderItems         OrderItem[]                      @relation("OrderItemVariant")
-  stockTransfers     StockTransfer[]                  @relation("StockTransferVariant")
+  product            Product                   @relation("ProductVariants", fields: [productId], references: [id])
+  groupProducts      GroupProduct[]            @relation("GroupProductVariant")
+  binInventories     BinInventory[]            @relation("BinInventoryVariant")
+  orderItems         OrderItem[]               @relation("OrderItemVariant")
+  stockTransfers     StockTransfer[]           @relation("StockTransferVariant")
+  variantOption      ProductVariantOption      @relation(fields: [variantOptionId], references: [id])
+  variantOptionValue ProductVariantOptionValue @relation(fields: [variantOptionValueId], references: [id])
+
+  @@unique([productId, variantOptionId, variantOptionValueId], name: "unique_variant_per_product")
 }
 
 model GroupProduct {

@@ -24,5 +24,15 @@ export class CreateProductVariantDto {
 
   @IsNumber()
   @IsOptional()
+  productId?: number;
+
+  @IsNumber()
+  variantOptionId: number;
+
+  @IsNumber()
+  variantOptionValueId: number;
+
+  @IsNumber()
+  @IsOptional()
   id?: number;
 }

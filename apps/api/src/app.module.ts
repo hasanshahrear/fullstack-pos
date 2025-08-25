@@ -14,6 +14,7 @@ import { StockTransfersModule } from './modules/stock-transfers/stock-transfers.
 import { ReturnsModule } from './modules/returns/returns.module';
 import { ActivityLogsModule } from './modules/activity-logs/activity-logs.module';
 import { ProductVariantOptionsModule } from './modules/product-variant-options/product-variant-options.module';
+import { ProductVariantOptionValuesModule } from './modules/product-variant-option-values/product-variant-option-values.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ProductVariantOptionsModule } from './modules/product-variant-options/p
     ReturnsModule,
     ActivityLogsModule,
     ProductVariantOptionsModule,
+    ProductVariantOptionValuesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

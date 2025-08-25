@@ -36,7 +36,7 @@ export class CreateProductDto {
   price: number;
 
   @IsBoolean()
-  productStatus: boolean;
+  isActive: boolean;
 
   @IsEnum(EDiscountType)
   @IsOptional()
