@@ -156,7 +156,7 @@ model ProductVariant {
   variantOptionValueId   Int
   isActive               Boolean        @default(true)
 
-  product            Product                   @relation("ProductVariants", fields: [productId], references: [id])
+  product            Product                   @relation("ProductVariants", fields: [productId], references: [id], onDelete: Cascade)
   groupProducts      GroupProduct[]            @relation("GroupProductVariant")
   binInventories     BinInventory[]            @relation("BinInventoryVariant")
   orderItems         OrderItem[]               @relation("OrderItemVariant")
