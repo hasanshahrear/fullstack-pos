@@ -1,5 +1,4 @@
-import { EDiscountType } from '@prisma/client';
-import { IsString, IsNumber, IsOptional, IsEnum, Min } from 'class-validator';
+import { IsNumber, IsOptional, Min } from 'class-validator';
 
 export class CreateGroupProductDto {
   @IsNumber()
